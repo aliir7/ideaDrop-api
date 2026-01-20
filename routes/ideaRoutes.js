@@ -23,7 +23,7 @@ router.get("/:id", getIdea);
 // @access       Public
 router.post("/", createIdea);
 
-// @route        POST api/ideas
+// @route        PUT api/ideas
 // @description  Update idea
 // @access       Public
 router.put("/:id", updateIdea);
