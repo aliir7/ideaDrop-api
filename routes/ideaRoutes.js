@@ -1,14 +1,26 @@
 import express from "express";
+import Idea from "../models/Idea.js";
 const router = express.Router();
 
 // @route        GET api/ideas
 // @description  Get all ideas
 // @access       Public
-router.get("/", (req, res) => {
-  const ideas = [{ id: 1, title: "idea 1", description: "this is idea 1" }];
+router.get("/", async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query._limit);
+    const query = Idea.find().sort({ createdAt: -1 });
 
-  console.log(req);
-  res.json(ideas);
+    if (!isNaN(limit)) {
+      query.limit(limit);
+    }
+
+    const ideas = await query.exec();
+    res.json({ message: "data successfully fetched", data: ideas });
+    next();
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
 });
 
 // @route        POST api/ideas
