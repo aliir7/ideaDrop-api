@@ -1,10 +1,12 @@
 import express from "express";
 import {
   createIdea,
+  deleteIdea,
   getIdea,
   getIdeas,
   updateIdea,
 } from "../controllers/ideaController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -20,12 +22,17 @@ router.get("/:id", getIdea);
 
 // @route        POST api/ideas
 // @description  Create new idea
-// @access       Public
-router.post("/", createIdea);
+// @access       Private
+router.post("/", protect, createIdea);
 
 // @route        PUT api/ideas
 // @description  Update idea
-// @access       Public
-router.put("/:id", updateIdea);
+// @access       Private
+router.put("/:id", protect, updateIdea);
+
+// @route        PUT api/ideas
+// @description  Update idea
+// @access       Private
+router.delete("/:id", protect, deleteIdea);
 
 export default router;

@@ -118,3 +118,43 @@ export const logoutUser = async (req, res, next) => {
     next(err);
   }
 };
+
+// generate new access token from refresh token
+export const refreshAccessToken = async (req, res, next) => {
+  try {
+    // get refresh token from request
+    const token = req.cookies?.refreshToken;
+
+    // check refresh token
+    if (!token) {
+      res.status(401);
+      throw new Error("No refresh token");
+    }
+
+    // get payload from token
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+
+    // find user by payload (userId)
+    const user = await User.findById(payload.userId);
+
+    // check user existing
+    if (!user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
+
+    // generate new access token
+    const newAccessToken = await generateToken({ userId: user._id.toString() });
+    res.status(201).json({
+      newAccessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
