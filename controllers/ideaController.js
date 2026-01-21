@@ -90,7 +90,8 @@ export const createIdea = async (req, res, next) => {
 // update idea
 export const updateIdea = async (req, res, next) => {
   try {
-    const { id } = req.body.params;
+    const { id } = req.params;
+
     // check id is valid
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(404);
@@ -153,7 +154,7 @@ export const updateIdea = async (req, res, next) => {
 // delete idea by id
 export const deleteIdea = async (req, res, next) => {
   try {
-    const { id } = req.body.params;
+    const { id } = req.params;
 
     // check id is valid
     if (!mongoose.Types.ObjectId.isValid(id)) {

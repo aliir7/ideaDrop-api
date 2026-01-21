@@ -26,8 +26,8 @@ export const registerUser = async (req, res, next) => {
 
     // Create tokens
     const payload = { userId: user._id.toString() };
-    const accessToken = generateToken(payload, "2m");
-    const refreshToken = generateToken(payload, "30d");
+    const accessToken = await generateToken(payload, "2m");
+    const refreshToken = await generateToken(payload, "30d");
 
     // Set refresh token in HTTP-Only cookie
     res.cookie("refreshToken", refreshToken, {
@@ -78,8 +78,8 @@ export const loginUser = async (req, res, next) => {
 
     // Create tokens
     const payload = { userId: user._id.toString() };
-    const accessToken = generateToken(payload, "2m");
-    const refreshToken = generateToken(payload, "30d");
+    const accessToken = await generateToken(payload, "2m");
+    const refreshToken = await generateToken(payload, "30d");
 
     // Set refresh token in HTTP-Only cookie
     res.cookie("refreshToken", refreshToken, {
@@ -112,7 +112,7 @@ export const logoutUser = async (req, res, next) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
     });
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(201).json({ message: "Logged out successfully" });
   } catch (err) {
     console.log(err);
     next(err);
