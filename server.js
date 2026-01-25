@@ -28,6 +28,10 @@ app.use("/api/auth", authRouter);
 
 // 404 Fallback
 app.use((req, res, next) => {
+  if (res.headersSent) {
+    return;
+  }
+
   const error = new Error(`Not found - ${req.originalUrl}`);
   res.status(404);
   next(error);

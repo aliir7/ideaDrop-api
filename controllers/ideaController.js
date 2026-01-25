@@ -17,7 +17,6 @@ export const getIdeas = async (req, res, next) => {
 
     const ideas = await query.exec();
     res.json({ message: "data successfully fetched", data: ideas });
-    next();
   } catch (err) {
     console.log(err);
     next(err);
