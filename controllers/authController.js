@@ -110,7 +110,6 @@ export const logoutUser = async (req, res, next) => {
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      sameSite: "none",
     });
     res.status(201).json({ message: "Logged out successfully" });
   } catch (err) {
@@ -146,7 +145,7 @@ export const refreshAccessToken = async (req, res, next) => {
     // generate new access token
     const newAccessToken = await generateToken({ userId: user._id.toString() });
     res.status(201).json({
-      newAccessToken,
+      accessToken: newAccessToken,
       user: {
         id: user._id,
         name: user.name,

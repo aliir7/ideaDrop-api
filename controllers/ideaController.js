@@ -50,14 +50,12 @@ export const createIdea = async (req, res, next) => {
     const validated = createIdeaSchema.safeParse(data);
 
     if (!validated.success) {
-      const formatted = validated.error.format();
-      const flatFormat = Object.values(formatted)
-        .flat()
-        .filter(Boolean)
-        .map((err) => err._errors)
-        .flat();
+      const errorMessages = validated.error.issues.map(
+        (issue) => issue.message,
+      );
+      console.log(errorMessages);
       res.status(400);
-      throw new Error(`error message:${flatFormat.join(",")}`);
+      throw new Error(`error message:${errorMessages.join(",")}`);
     }
 
     // add new Idea to db
@@ -72,8 +70,8 @@ export const createIdea = async (req, res, next) => {
               .map((tag) => tag.trim())
               .filter(Boolean)
           : Array.isArray
-          ? tags
-          : [],
+            ? tags
+            : [],
       user: req.user.id,
     });
     const savedIdea = await newIdea.save();
@@ -132,11 +130,11 @@ export const updateIdea = async (req, res, next) => {
     idea.tags = Array.isArray(tags)
       ? tags
       : typeof tags === "string"
-      ? tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-      : [];
+        ? tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        : [];
 
     // updated idea
     const updatedIdea = await idea.save();

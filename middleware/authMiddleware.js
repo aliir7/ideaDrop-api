@@ -11,8 +11,7 @@ export const protect = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer")) {
-      res.status(401);
-      throw new Error("Not authorized, No token");
+      res.status(401).json({ message: "Not authorized, No token provided" });
     }
 
     // get token from header
@@ -24,15 +23,19 @@ export const protect = async (req, res, next) => {
 
     // check user existing
     if (!user) {
-      res.status(401);
-      throw new Error("User not found");
+      return res.status(401).json({ message: "User not found or deactivated" });
     }
 
     req.user = user;
     next();
   } catch (err) {
-    console.log(err);
-    res.status(401);
-    next(new Error("Not authorized, token failed"));
+    console.error("Auth Middleware Error:", err.message); // لاگ دقیق‌تر
+
+    // تشخیص خطاهای خاص JWT (مثل انقضا)
+    if (err.code === "ERR_JWT_EXPIRED") {
+      return res.status(401).json({ message: "Token expired" });
+    }
+
+    return res.status(401).json({ message: "Not authorized, token failed" });
   }
 };

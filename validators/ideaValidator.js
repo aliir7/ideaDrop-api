@@ -10,7 +10,7 @@ export const createIdeaSchema = z.object({
     .string()
     .min(10, "summary must be least 10 character")
     .max(255, "summary must be max length 255 character"),
-  tags: z.string().optional(),
+  tags: z.array().optional(),
 });
 
 export const updateIdeaSchema = createIdeaSchema.partial();
