@@ -50,12 +50,9 @@ export const createIdea = async (req, res, next) => {
     const validated = createIdeaSchema.safeParse(data);
 
     if (!validated.success) {
-      const errorMessages = validated.error.issues.map(
-        (issue) => issue.message,
-      );
-      console.log(errorMessages);
-      res.status(400);
-      throw new Error(`error message:${errorMessages.join(",")}`);
+      return res.status(400).json({
+        message: validated.error.errors.map((e) => e.message).join(", "),
+      });
     }
 
     // add new Idea to db
@@ -114,14 +111,9 @@ export const updateIdea = async (req, res, next) => {
     const validated = updateIdeaSchema.safeParse(data);
 
     if (!validated.success) {
-      const formatted = validated.error.format();
-      const flatFormat = Object.values(formatted)
-        .flat()
-        .filter(Boolean)
-        .map((err) => err._errors)
-        .flat();
-      res.status(400);
-      throw new Error(`error message:${flatFormat.join(",")}`);
+      return res.status(400).json({
+        message: validated.error.errors.map((e) => e.message).join(", "),
+      });
     }
 
     idea.title = title;

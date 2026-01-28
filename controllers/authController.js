@@ -2,18 +2,24 @@ import User from "../models/User.js";
 import { generateToken } from "../lib/utils/generateToken.js";
 import { jwtVerify } from "jose";
 import { JWT_SECRET } from "../lib/utils/constants.js";
+import {
+  createUserSchema,
+  loginUserSchema,
+} from "../validators/userValidator.js";
 // create new user
 export const registerUser = async (req, res, next) => {
   try {
     // get data
     const { name, email, password } = req.body || {};
 
-    // validation
-    if (!name || !email || !password) {
-      res.status(400);
-      throw new Error("all inputs are required");
+    // validations
+    const data = { name, email, password };
+    const validated = createUserSchema.safeParse(data);
+    if (!validated.success) {
+      return res.status(400).json({
+        message: validated.error.errors.map((e) => e.message).join(", "),
+      });
     }
-
     //check for user already exist
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -57,9 +63,13 @@ export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
 
-    if (!email || !password) {
-      res.status(400);
-      throw new Error("email and password are required");
+    // validations
+    const data = { email, password };
+    const validated = loginUserSchema.safeParse(data);
+    if (!validated.success) {
+      return res.status(400).json({
+        message: validated.error.errors.map((e) => e.message).join(", "),
+      });
     }
     // Find user
     const user = await User.findOne({ email });
